@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>손잇다 (SignBridge) — 수어 영상통화 프로토타입</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <h1>손잇다 <span>SignBridge</span></h1>
+    <p class="subtitle">실시간 AI 수어 영상통화 프로토타입 · 우선순위 1~4 데모</p>
+  </header>
+
+  <main class="call-grid">
+    <!-- 왼쪽: 수어 사용자 -->
+    <section class="panel" id="panel-signer">
+      <h2>수어 사용자 화면</h2>
+      <div class="video-wrap">
+        <video id="signerVideo" autoplay playsinline muted></video>
+        <canvas id="signerCanvas"></canvas>
+      </div>
+
+      <div class="controls">
+        <button id="btnRegisterMode">단어 등록 모드</button>
+        <button id="btnStartRecognize">인식 시작</button>
+        <button id="btnStopRecognize" disabled>인식 중지</button>
+      </div>
+
+      <div id="registerBox" class="register-box hidden">
+        <input id="glossInput" type="text" placeholder="등록할 단어 (예: 안녕하세요)" />
+        <button id="btnRecordTemplate">3초간 손동작 녹화</button>
+        <div id="templateList" class="template-list"></div>
+      </div>
+
+      <div class="captions">
+        <p><strong>인식된 글로스:</strong> <span id="glossStream">-</span></p>
+        <p><strong>다듬어진 문장 (자막):</strong> <span id="refinedSentence">-</span></p>
+      </div>
+    </section>
+
+    <!-- 오른쪽: 일반 사용자 -->
+    <section class="panel" id="panel-hearing">
+      <h2>일반 사용자 화면</h2>
+      <div class="video-wrap sign-output" id="signPlayerContainer">
+        <div class="sign-placeholder">수어 영상 대기 중…</div>
+      </div>
+
+      <div class="controls">
+        <button id="btnMic">🎤 말하기 시작</button>
+      </div>
+
+      <div class="captions">
+        <p><strong>내가 말한 문장(STT):</strong> <span id="sttText">-</span></p>
+        <p><strong>다듬어진 문장:</strong> <span id="refinedForSigner">-</span></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      백엔드 API: <code id="apiBaseLabel">http://localhost:8000</code> ·
+      <a href="../docs/ARCHITECTURE.md">아키텍처 문서</a> ·
+      <a href="../README.md">README</a>
+    </p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
