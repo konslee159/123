@@ -1,0 +1,17 @@
+{
+  "note": "실제 서비스에서는 팀이 직접 촬영한 mp4를 이 폴더에 넣고 아래 파일명과 맞추면 됩니다. 지금은 촬영본이 없어 placeholder(자리표시) 항목으로 표시되며, signPlayer.js가 파일이 없으면 자동으로 텍스트 플레이스홀더 애니메이션으로 대체 재생합니다.",
+  "clips": [
+    "hello.mp4",
+    "thanks.mp4",
+    "sorry.mp4",
+    "yes.mp4",
+    "no.mp4",
+    "help.mp4",
+    "hospital.mp4",
+    "hurt.mp4",
+    "toilet.mp4",
+    "office.mp4",
+    "name.mp4",
+    "understand.mp4"
+  ]
+}

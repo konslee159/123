@@ -1,0 +1,37 @@
+{
+  "description": "일상 대화 초점 어휘 목록. AIHub 수어 영상(dataSetSn=103) 필터링 기준 및 반대방향(음성→수어) 영상 매칭 사전으로 함께 사용.",
+  "aihub_categories_to_include": [
+    "인사/일상표현",
+    "병원/건강",
+    "관공서/행정",
+    "감정표현",
+    "긴급상황",
+    "가족/기본대화"
+  ],
+  "aihub_categories_to_exclude": [
+    "전문용어",
+    "스포츠",
+    "역사/문화",
+    "경제/금융 전문용어"
+  ],
+  "words": [
+    { "gloss": "안녕하세요", "category": "인사/일상표현", "clip": "hello.mp4" },
+    { "gloss": "감사합니다", "category": "인사/일상표현", "clip": "thanks.mp4" },
+    { "gloss": "죄송합니다", "category": "인사/일상표현", "clip": "sorry.mp4" },
+    { "gloss": "네", "category": "인사/일상표현", "clip": "yes.mp4" },
+    { "gloss": "아니요", "category": "인사/일상표현", "clip": "no.mp4" },
+    { "gloss": "도와주세요", "category": "긴급상황", "clip": "help.mp4" },
+    { "gloss": "병원", "category": "병원/건강", "clip": "hospital.mp4" },
+    { "gloss": "아파요", "category": "병원/건강", "clip": "hurt.mp4" },
+    { "gloss": "화장실", "category": "일상표현", "clip": "toilet.mp4" },
+    { "gloss": "관공서", "category": "관공서/행정", "clip": "office.mp4" },
+    { "gloss": "이름", "category": "가족/기본대화", "clip": "name.mp4" },
+    { "gloss": "이해했어요", "category": "감정표현", "clip": "understand.mp4" },
+    { "gloss": "경찰", "category": "긴급상황", "clip": "police.mp4", "confirmed_in_aihub_real_sen_sample": true },
+    { "gloss": "119", "category": "긴급상황", "clip": "119.mp4", "confirmed_in_aihub_real_sen_sample": true },
+    { "gloss": "응급실", "category": "병원/건강", "clip": "er.mp4", "confirmed_in_aihub_real_sen_sample": true },
+    { "gloss": "은행", "category": "관공서/행정", "clip": "bank.mp4", "confirmed_in_aihub_real_sen_sample": true },
+    { "gloss": "도와주다", "category": "긴급상황", "clip": "help_dictionary.mp4", "confirmed_in_aihub_real_sen_sample": true, "note": "도와주세요의 사전형 글로스. AIHub 데이터는 어미가 빠진 사전형/원형으로 라벨링됨" },
+    { "gloss": "아프다", "category": "병원/건강", "clip": "hurt_dictionary.mp4", "confirmed_in_aihub_real_sen_sample": true, "note": "아파요의 사전형 글로스" }
+  ]
+}
