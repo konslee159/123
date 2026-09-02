@@ -71,7 +71,13 @@ def extract_sequence(video_path: Path) -> list[list[float]]:
 
     model_path = ensure_model()
     options = vision.HandLandmarkerOptions(
-        base_options=mp_python.BaseOptions(model_asset_path=str(model_path)),
+        # macOS에서 GPU(Metal) 델리게이트를 자동 선택하면
+        # "Check failed: service_ Service is unavailable"로 크래시하는
+        # 알려진 문제가 있어, CPU 델리게이트를 명시적으로 강제한다.
+        base_options=mp_python.BaseOptions(
+            model_asset_path=str(model_path),
+            delegate=mp_python.BaseOptions.Delegate.CPU,
+        ),
         running_mode=vision.RunningMode.VIDEO,
         num_hands=2,
     )
