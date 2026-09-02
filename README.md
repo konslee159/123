@@ -44,7 +44,11 @@ docs/               아키텍처 설명, 우선순위 매핑 문서
 
 ## 실행 방법
 
+macOS/Linux, Windows 모두 동일한 코드로 동작합니다. 아래에서 본인 OS에 맞는 명령어를 쓰세요.
+
 ### 1) 백엔드 (ChatGPT 문장 다듬기 + 영상 매칭 API)
+
+**macOS / Linux (bash/zsh)**
 
 ```bash
 cd backend
@@ -54,13 +58,46 @@ export OPENAI_API_KEY=sk-...   # 없으면 자동으로 규칙 기반 다듬기�
 uvicorn app.main:app --reload --port 8000
 ```
 
+**Windows (PowerShell)**
+
+```powershell
+cd backend
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+$env:OPENAI_API_KEY = "sk-..."   # 없으면 자동으로 규칙 기반 다듬기로 대체 동작
+uvicorn app.main:app --reload --port 8000
+```
+
+> PowerShell에서 `Activate.ps1` 실행이 "실행 정책" 오류로 막히면, 관리자 권한 없이 현재 사용자
+> 범위에서만 스크립트 실행을 허용하는 아래 명령을 한 번 실행한 뒤 다시 시도하세요.
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+> PowerShell 대신 **명령 프롬프트(cmd.exe)**를 쓴다면 활성화 명령만 다음으로 바꾸면 됩니다.
+> ```cmd
+> .venv\Scripts\activate.bat
+> set OPENAI_API_KEY=sk-...
+> ```
+
+Python 버전은 3.11 또는 3.12를 권장합니다 (아주 최신 버전(예: 3.14)은 `pydantic-core`
+빌드가 아직 지원되지 않아 설치가 실패할 수 있습니다). `py -0` (Windows) 또는 `python3.11 --version`
+(macOS/Linux)로 설치된 버전을 확인하고, 필요하면 `py -3.11 -m venv .venv`처럼 버전을 지정하세요.
+
 ### 2) 프론트엔드 (브라우저 프로토타입)
 
-정적 파일이라 별도 빌드가 필요 없습니다.
+정적 파일이라 별도 빌드가 필요 없고, OS 상관없이 동일합니다.
 
 ```bash
 cd frontend
 python3 -m http.server 5500
+```
+
+Windows(PowerShell/cmd)에서는 `python3` 대신 `python`을 쓰는 경우가 많습니다.
+
+```powershell
+cd frontend
+python -m http.server 5500
 ```
 
 브라우저에서 `http://localhost:5500` 접속 → 카메라/마이크 권한 허용.
