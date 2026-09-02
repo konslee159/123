@@ -6,3 +6,4 @@ venv/
 data/aihub_filtered/
 node_modules/
 .DS_Store
+scripts/.cache/
