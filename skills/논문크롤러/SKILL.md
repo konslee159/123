@@ -35,10 +35,27 @@ Node.js가 필요하다.
 
 ### 2단계 — RISS에서 검색한다
 
-`references/riss-search-guide.md`를 읽고 그대로 따른다. 요점만 말하면: RISS는 공식
-API가 없으므로 `WebFetch`로 검색 결과 페이지를 직접 읽어서 제목·저자·출처·연도·유형·
-상세링크를 뽑는다. 페이지를 대충 훑고 그럴듯한 논문을 지어내면 안 된다 — 실제로 검색
-결과에 있는 것만 담는다.
+RISS 검색 결과는 페이지가 열린 뒤 JS가 실행되면서 채워지는 경우가 많다. `WebFetch`처럼
+JS를 실행하지 않는 도구로 읽으면 검색어를 바꿔도 매번 같은 "기본/추천 콘텐츠"만 보이는데,
+이게 검색이 된 것처럼 착각하기 쉽다. 그래서 **`scripts/search_riss.mjs`를 우선 쓴다** —
+헤드리스 브라우저로 실제 로딩을 기다린 뒤 읽고, 검색어가 결과 페이지에 실제로 반영됐는지
+자동으로 확인해서, 확인 안 되면 결과를 쓰지 않고 에러로 멈춘다.
+
+```bash
+node <스킬>/scripts/search_riss.mjs --query "<검색어>" --year1 <시작연도> --year2 <끝연도> --pages 2 --out riss_result.json
+```
+
+- 에러 없이 끝났으면 `--out`으로 지정한 JSON에 `title/link/year/type/rawBlockText`가 담긴다.
+  `rawBlockText`에 저자·출처가 섞여 있으니 그대로 옮기지 말고 한 번 읽어서 저자/출처를
+  분리해 데이터 파일에 넣는다 — 자동 분리는 틀린 저자명을 조용히 만들 수 있어서 일부러
+  안 했다.
+- `[문제] p1: 검색어 미반영...` 같은 메시지가 나오면 그 페이지의 결과는 버린다. 이럴 때는
+  `--dump-html snapshot.html`을 붙여서 한 번 더 돌려 실제로 어떤 페이지가 왔는지
+  파일로 저장해 확인한다 (RISS가 리다이렉트했는지, 로그인/캡차를 요구하는지 등).
+- 이 환경에 Playwright 브라우저가 없다는 에러가 나면 `npx playwright install chromium`으로
+  설치하거나(가능한 환경이면), `references/riss-search-guide.md`의 `WebFetch` 대체 방법을
+  따른다. 어느 경로든 **페이지를 대충 훑고 그럴듯한 논문을 지어내면 안 된다** — 실제로
+  검색 결과에 있는 것만 담는다.
 
 ### 3단계 — KCI에서 검색한다 (키가 있으면)
 
@@ -100,9 +117,13 @@ node <스킬>/scripts/verify_excel.mjs <데이터 파일>
 손으로 옮겨적다 생기는 오류가 없다. 그래서 나중에 논문을 추가/삭제할 때도 엑셀이 아니라
 데이터 파일을 고친다.
 
-**RISS를 스크립트로 자동 파싱하지 않고 Claude가 직접 읽는 이유.** RISS는 공식 API가
-없어서 페이지 구조에 의존해야 하는데, 고정 파서는 페이지가 조금만 바뀌어도 조용히 틀린
-값을 뱉는다. 매번 직접 읽으면 이상한 결과를 그 자리에서 알아챌 수 있다.
+**RISS를 헤드리스 브라우저로 읽는 이유.** RISS 검색 결과는 JS가 실행되면서 채워지는
+경우가 많아서, JS를 실행하지 않는 도구로 읽으면 검색어를 바꿔도 매번 같은 기본 콘텐츠만
+보고도 그게 검색 결과인 줄 착각하기 쉽다. 실제로 이 문제로 엉뚱한 논문 목록이 만들어진
+적이 있다. `search_riss.mjs`는 실제 로딩을 기다리고, 검색어가 결과에 반영됐는지 자동으로
+확인해서 안 되면 그 자리에서 멈춘다 — 조용히 틀린 결과를 내는 것보다 낫다. 또한 특정
+CSS 클래스 이름 대신 상세보기 링크(`DetailView.do`) 패턴으로 결과를 찾기 때문에 사이트
+디자인이 바뀌어도 잘 안 깨진다.
 
 **링크가 필수인 이유.** 논문 목록의 가치는 "나중에 클릭해서 원문을 확인할 수 있다"는
 데 있다. 링크 없는 행은 제목만 있는 메모와 다를 게 없다.
@@ -120,11 +141,12 @@ node <스킬>/scripts/verify_excel.mjs <데이터 파일>
 ```
 논문크롤러/
 ├── scripts/
+│   ├── search_riss.mjs   RISS 검색 (헤드리스 브라우저, 2단계에서 우선 사용)
+│   ├── search_kci.mjs    KCI Open API 검색
 │   ├── build_excel.mjs   데이터 파일 → 엑셀
-│   ├── verify_excel.mjs  산출물 검증
-│   └── search_kci.mjs    KCI Open API 검색
+│   └── verify_excel.mjs  산출물 검증
 ├── references/
-│   ├── riss-search-guide.md  RISS 검색 방법 (2단계 전에 읽는다)
+│   ├── riss-search-guide.md  RISS 검색 방법 · search_riss.mjs가 안 될 때 대안
 │   └── kci-api-guide.md      KCI Open API 키 발급 방법
 └── assets/
     └── papers.template.mjs   데이터 파일 템플릿

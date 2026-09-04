@@ -53,6 +53,23 @@ KCI가 [자체 Open API 포털](https://www.kci.go.kr/kciportal/po/openapi/openA
 분류가 KCI 등재지를 상당 부분 포함하므로, 키 발급을 기다리는 동안에도 조사를 시작할 수 있다.
 SKILL.md의 "KCI 키가 없을 때" 절 참고.
 
+## 방법 1과 2는 요청 형식이 다르다
+
+- **방법 1 (data.go.kr)**: 보통 `serviceKey`, `title` 같은 파라미터 이름을 쓴다.
+  `search_kci.mjs`의 기본값이 이쪽이다.
+- **방법 2 (kci.go.kr 자체 포털)**: 파라미터 이름이 다를 수 있다 (예: `key`). 활용가이드
+  문서에 나온 실제 요청 URL을 보고 `search_kci.mjs`를 이렇게 조정한다.
+
+  ```bash
+  node scripts/search_kci.mjs --key "<발급받은 키>" --query "배터리 LCA" \
+    --base "<가이드에 적힌 요청 주소>" --auth-param key --query-param title --dump
+  ```
+
+**주의: 활용가이드 문서의 예시 URL에 있는 키(`key=00000001` 같은 값)는 진짜 키가
+아니라 문서용 샘플이다.** 실제 키는 신청 승인 후 마이페이지에서 확인하는, 보통 20자
+이상의 영문/숫자 조합이다. `search_kci.mjs`는 짧거나 0으로만 된 키를 넣으면 경고를
+띄운다.
+
 ## 흔한 오류
 
 - `resultCode`가 `00`/`0`이 아닌 응답: 대부분 (1) 키가 아직 승인 대기중, (2) 파라미터 이름이

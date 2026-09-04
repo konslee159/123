@@ -4,12 +4,19 @@
 //
 // 사용법:
 //   node search_kci.mjs --key <서비스키> --query "배터리 LCA" [--rows 50] [--page 1] [--dump]
+//     [--base <요청 URL>] [--auth-param serviceKey|key] [--query-param title]
 //
 // --dump 를 붙이면 파싱하지 않고 원본 XML을 그대로 출력한다.
-// data.go.kr API는 활용신청한 데이터셋마다 응답 태그 이름이 조금씩 다르다.
-// 이 스크립트는 흔한 태그 이름 후보들을 넓게 잡아서 매핑을 "시도"할 뿐이니,
-// 처음 한 번은 --dump로 실제 태그 이름을 직접 확인하고 아래 FIELD_CANDIDATES를 맞춰 쓰는 걸 권한다.
-// (신청 승인 후 마이페이지에서 내려받는 "활용가이드" 문서에 정확한 스펙이 있다.)
+// KCI 데이터는 두 경로로 받을 수 있고 요청 형식이 다르다 — 사용자가 어느 쪽에서 키를
+// 받았는지에 맞춰 --base/--auth-param/--query-param을 조정한다. 정확한 값은 활용신청
+// 승인 후 받는 "활용가이드" 문서에 있다 (data.go.kr 마이페이지, 또는 kci.go.kr 신청 시
+// 함께 내려받는 PDF/HWP). 그 문서의 예시 URL에 있는 키(흔히 00000001 같은 값)는
+// 진짜 키가 아니라 예시이니 그대로 쓰지 않는다.
+//   - data.go.kr 경유: 기본값 그대로 (serviceKey / title)
+//   - KCI 자체 포털(open.kci.go.kr 등): --base로 그쪽 요청 URL을 주고, 문서에 적힌
+//     파라미터 이름이 다르면 --auth-param/--query-param으로 맞춘다.
+// 응답 태그 이름도 데이터셋마다 다르므로, 처음 한 번은 --dump로 실제 태그 이름을 확인하고
+// 필요하면 아래 FIELD_CANDIDATES에 추가한다.
 
 const args = process.argv.slice(2);
 const opt = (name, def) => {
@@ -31,14 +38,25 @@ if (!key) {
   console.error("--key 가 없습니다 (또는 환경변수 KCI_API_KEY). references/kci-api-guide.md 에서 발급 방법을 확인한다.");
   process.exit(1);
 }
+// 활용가이드 PDF 등 공식 문서에 예시로 박혀 있는 더미 키를 실제 키로 착각해서 쓰는 실수가
+// 흔하다. 발급받은 진짜 키는 보통 수십 자의 영문/숫자 조합이다.
+if (/^0+$/.test(key) || key.length < 20) {
+  console.error(`[경고] --key 값("${key}")이 문서의 예시 키(예: 00000001)처럼 보입니다.`);
+  console.error("실제 발급받은 서비스키(보통 20자 이상 영숫자)가 맞는지 data.go.kr/kci.go.kr 마이페이지에서 다시 확인한다.");
+}
 if (!query) {
   console.error("--query 가 없습니다. 예: --query \"배터리 LCA\"");
   process.exit(1);
 }
 
+// data.go.kr 경유 데이터셋은 보통 serviceKey/title, KCI 자체 포털(open.kci.go.kr)은
+// key/title 등 이름이 다를 수 있다. 활용가이드 문서를 보고 다르면 이 두 옵션으로 맞춘다.
+const authParam = opt("auth-param", "serviceKey");
+const queryParam = opt("query-param", "title");
+
 const url = new URL(base);
-url.searchParams.set("serviceKey", key);
-url.searchParams.set("title", query); // 데이터셋에 따라 title 대신 다른 파라미터명일 수 있다 — 아래 참고
+url.searchParams.set(authParam, key);
+url.searchParams.set(queryParam, query);
 url.searchParams.set("numOfRows", rows);
 url.searchParams.set("pageNo", page);
 
