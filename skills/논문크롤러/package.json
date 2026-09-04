@@ -1,0 +1,9 @@
+{
+  "name": "paper-crawler-skill",
+  "private": true,
+  "type": "module",
+  "description": "논문크롤러 스킬의 실행 의존성 (RISS/KCI 검색 결과를 엑셀로 정리)",
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}
